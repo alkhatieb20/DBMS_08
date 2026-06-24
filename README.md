@@ -307,13 +307,13 @@ docker volume rm pg_data
 the host filesystem. Why is it still recommended to use named volumes instead
 of bind-mounting that path directly with `-v /var/lib/docker/volumes/...`?
 
-> *Your answer:*
+> *Your answer:*Docker fully manages named volumes, making them OS-independent and abstracting away complex file permission issues. Bind-mounting hardcodes a specific host OS path, making the setup fragile and harder to port to different operating systems (like Windows vs. Linux).
 
 **Question 4.2:** You want to back up the database. Which `docker` command
 lets you copy files out of a running container, and how would you copy the
 volume contents to a `.tar.gz` archive on the host?
 
-> *Your answer:*
+> *Your answer:* You use the docker cp command. For example, to backup you could run a temporary container mounting both the volume and host directory: docker run --rm -v pg_data:/volume -v $(pwd):/backup ubuntu tar cvzf /backup/backup.tar.gz -C /volume .
 
 ---
 
@@ -341,7 +341,8 @@ docker run --rm -it postgres:16 \
 
 > **Screenshot 6:** Take a screenshot showing the connection error.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="865" height="95" alt="Screenshot_6" src="https://github.com/user-attachments/assets/066097a2-8c78-460d-8e28-aa0a929d3caa" />
+
 
 ### Step 2 – Fix It With a Custom Bridge Network
 
@@ -382,13 +383,13 @@ docker volume rm pg_data
 the default bridge. Why can containers on the default bridge **not** resolve
 each other by name, while containers on a user-defined bridge can?
 
-> *Your answer:*
+> *Your answer:* For legacy and backward-compatibility reasons, Docker's internal DNS resolution feature is disabled on the default bridge network. It is explicitly enabled only for user-defined custom bridge networks, allowing containers to discover each other dynamically by their names.
 
 **Question 5.2:** You could find the IP address of the `pg` container with
 `docker inspect` and hard-code it. Why is using the container name as a
 hostname strongly preferable?
 
-> *Your answer:*
+> *Your answer:* Container IP addresses are assigned dynamically and can change every time a container restarts or is recreated. The container name, however, acts as a static, reliable hostname that Docker's embedded DNS server consistently resolves to the correct, current IP address of the container.
 
 ---
 
