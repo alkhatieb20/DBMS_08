@@ -179,13 +179,13 @@ git push -u origin main
 `apt-get install`, and `rm -rf /var/lib/apt/lists/*` in a single line?
 What would happen to the image size if these were three separate `RUN` lines?
 
-> *Your answer:*
+> *Your answer:* Every RUN instruction creates a new permanent layer in the image. Combining them ensures that the temporary package lists (cleared by rm -rf) are deleted in the same layer they were created. If separated, the temporary files would be permanently baked into an intermediate layer, unnecessarily increasing the final image size.
 
 **Question 2.2:** `EXPOSE 80` in a Dockerfile does **not** actually open port
 80. What does it do, and what is required at `docker run` time to actually
 forward a port?
 
-> *Your answer:*
+> *Your answer:* EXPOSE 80 serves purely as documentation for developers to know which port the application uses. It does not actually publish the port. To make it accessible, you must explicitly use the -p <host_port>:80 flag at docker run time.
 
 ---
 
@@ -226,7 +226,8 @@ docker exec -it pg psql -U postgres -c "SELECT * FROM test;"
 
 > **Screenshot 4:** Take a screenshot showing the error message.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="683" height="86" alt="Screenshot_4" src="https://github.com/user-attachments/assets/eeb163d2-81e3-4e91-99a3-dd74fb7ab689" />
+
 
 ### Questions for Section 3
 
@@ -234,13 +235,13 @@ docker exec -it pg psql -U postgres -c "SELECT * FROM test;"
 `postgres:16` still exists on your machine. Why does recreating a container
 from the same image not restore the data?
 
-> *Your answer:*
+> *Your answer:* An image is a static, read-only template. When a container runs, Docker adds a temporary writable layer on top. Writing data (like our table) only affects this temporary layer. When the container is removed, that writable layer is permanently deleted.
 
 **Question 3.2:** `docker stop` sends SIGTERM and waits for the process to
 exit cleanly. `docker kill` sends SIGKILL immediately. Why is `docker stop`
 preferred for a database container?
 
-> *Your answer:*
+> *Your answer:* docker stop sends a SIGTERM signal, allowing PostgreSQL to gracefully flush data from memory to disk and close connections safely. docker kill sends a SIGKILL instantly cutting the process off, which can severely corrupt the database files.
 
 ---
 
@@ -290,7 +291,8 @@ docker volume inspect pg_data
 > **Screenshot 5:** Take a screenshot showing the `SELECT` result after
 > container recreation, and the `docker volume inspect` output.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="865" height="147" alt="Screenshot_5" src="https://github.com/user-attachments/assets/4168d1bb-e6af-4e43-a9d5-08ef7623e875" />
+
 
 ### Step 3 – Clean Up
 
