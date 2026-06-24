@@ -53,7 +53,8 @@ docker compose version
 
 > **Screenshot 1:** Take a screenshot showing both version outputs.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="630" height="62" alt="Screenshot_1" src="https://github.com/user-attachments/assets/c663dfee-5643-4556-bb34-8d7ef0be2f4f" />
+
 
 ---
 
@@ -78,7 +79,8 @@ docker images
 > **Screenshot 2:** Take a screenshot showing `docker ps -a` and
 > `docker images` output.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="940" height="100" alt="Screenshot_2" src="https://github.com/user-attachments/assets/655c7a51-99be-4dbd-890f-e70e394ce165" />
+
 
 ### Step 2 – Run an nginx Webserver
 
@@ -108,13 +110,13 @@ docker system df
 **Question 1.1:** The flag `-d` starts the container in detached mode.
 What happens without `-d`, and why is detached mode useful for a web server?
 
-> *Your answer:*
+> *Your answer:* Without -d, the container runs in the foreground, printing logs directly and blocking the terminal. Detached mode allows the web server to run silently in the background, freeing the terminal for other commands.
 
 **Question 1.2:** `-p 8080:80` maps host port 8080 to container port 80.
 Which port is the application actually listening on inside the container?
 What would `-p 9000:80` change?
 
-> *Your answer:*
+> *Your answer:* The application is listening on port 80 inside the container. Changing it to -p 9000:80 would map the host machine's port 9000 to the container's internal port 80.
 
 ---
 
@@ -160,7 +162,8 @@ exit
 > **Screenshot 3:** Take a screenshot showing the `docker build` output and
 > the commands run inside the container.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="925" height="364" alt="Screenshot_3" src="https://github.com/user-attachments/assets/f14b03e4-3b62-45c5-a532-f417777ec807" />
+
 
 ### Step 4 – Commit
 
