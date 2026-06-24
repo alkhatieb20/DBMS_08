@@ -506,7 +506,8 @@ curl http://localhost:8000/studenten
 > **Screenshot 7:** Take a screenshot showing `docker compose ps` and the
 > `curl /` response.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="863" height="80" alt="Screenshot_7" src="https://github.com/user-attachments/assets/92a1d629-875b-4c76-aeeb-011702272db9" />
+
 
 ### Step 5 – Observe Compose Networking
 
@@ -526,6 +527,8 @@ docker compose down -v   # also removes the named volume
 
 > **Question:** What is the difference between `down` and `down -v`?
 > When would you use each?
+>
+> docker compose down stops and removes containers and networks but preserves the persistent data volumes (useful for regular restarts or updates). docker compose down -v forcefully deletes the volumes as well, completely wiping the database clean (useful for development resets or starting from a completely clean slate).
 
 ### Step 7 – Commit
 
@@ -541,13 +544,13 @@ git push -u origin main
 starts before `api`. Does it guarantee that PostgreSQL is **ready to accept
 connections** when the API starts? What is the correct way to handle this?
 
-> *Your answer:*
+> *Your answer:* It ensures the PostgreSQL container starts first, but it does NOT guarantee the database engine is fully initialized and ready to accept connections. The API might crash if it tries to connect too early. The robust solution is to define a healthcheck in the compose file for the database, and use depends_on: postgres: condition: service_healthy in the API service.
 
 **Question 6.2:** The `api` service uses `volumes: - ./api:/app` (a bind
 mount). What is the advantage of this during development compared to
 `COPY`-ing the code into an image at build time?
 
-> *Your answer:*
+> *Your answer:* It syncs files directly from the host machine to the running container in real-time. This allows developers to edit Python code locally and immediately see changes without having to painfully stop and rebuild the entire Docker image after every single code change.
 
 ---
 
@@ -619,7 +622,8 @@ curl http://localhost:8000/studenten
 > **Screenshot 8:** Take a screenshot showing the `curl /studenten` response
 > with all four rows.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="929" height="49" alt="Screenshot_8" src="https://github.com/user-attachments/assets/290b644b-4529-4091-9b52-222571c2d832" />
+
 
 ### Step 4 – Commit
 
@@ -635,13 +639,13 @@ git push
 `init.sql`, and run `docker compose up -d` again. The schema change does
 **not** appear in the database. Why not, and how do you force re-initialisation?
 
-> *Your answer:*
+> *Your answer:* The initialization scripts in /docker-entrypoint-initdb.d/ are completely ignored by PostgreSQL if the data directory (pg_data) already exists and contains data. To force re-initialization, you must destroy the existing volume using docker compose down -v so that the database starts from a completely clean state
 
 **Question 7.2:** `GENERATED ALWAYS AS IDENTITY` is used instead of
 `SERIAL`. What is the practical difference? Which one is the modern
 SQL-standard approach?
 
-> *Your answer:*
+> *Your answer:* GENERATED ALWAYS AS IDENTITY is the modern, official SQL-standard approach. The practical difference is that it strictly prevents users from manually inserting their own values into the ID column (unless explicitly forced with OVERRIDING SYSTEM VALUE), which protects against sequence desynchronization. SERIAL is a legacy PostgreSQL-specific macro that allows manual overrides by default, which frequently leads to primary key conflicts
 
 ---
 
