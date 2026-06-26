@@ -729,7 +729,8 @@ git push
 > **Screenshot 9:** Take a screenshot showing `git status` confirming
 > `.env` is not staged, and the working `curl` response.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="912" height="37" alt="Screenshot_9" src="https://github.com/user-attachments/assets/cfbc78d0-b910-406c-a1d5-c36b7d635570" />
+
 
 ### Questions for Section 8
 
@@ -738,13 +739,13 @@ git push
 What is the standard practice to document which variables are required
 without committing the actual secrets?
 
-> *Your answer:*
+> *Your answer:* The .env file contains sensitive information like database passwords, API keys, and secret credentials. Committing it to a Git repository (especially public ones like GitHub) exposes these secrets to anyone, leading to severe security breaches. It must always be added to .gitignore
 
 **Question 8.2:** Even with `.env` excluded from git, the password is still
 stored in plain text on disk. Name one mechanism Docker provides for
 production-grade secret management that avoids plain-text env files entirely.
 
-> *Your answer:*
+> *Your answer:* If the .env file is missing, Docker Compose will issue a warning and substitute the missing variables with blank/empty strings. Consequently, the database container will fail to initialize or the API will crash because it lacks the required valid credentials to connect
 
 ---
 
@@ -825,7 +826,8 @@ curl http://localhost:8000/studenten
 > **Screenshot 10:** Take a screenshot showing `docker images` with the
 > final image size and the working `curl` response.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="728" height="140" alt="Screenshot_10" src="https://github.com/user-attachments/assets/c7f3332c-3a53-465a-a00c-dfbee08407b0" />
+
 
 ### Step 5 – Commit
 
@@ -841,13 +843,13 @@ git push
 environment from the builder stage. The final image does not contain `pip` or
 `uv`. What security advantage does this provide?
 
-> *Your answer:*
+> *Your answer:* It significantly reduces the attack surface. By leaving out package managers (pip, uv) and build tools in the final production image, an attacker who manages to compromise the container cannot easily download or install malicious packages, scripts, or additional tools to further exploit the system.
 
 **Question 9.2:** The builder stage installs dependencies from `pyproject.toml`
 before copying the application code. Why does this ordering improve build
 cache efficiency when you frequently change only `main.py`?
 
-> *Your answer:*
+> *Your answer:* Docker caches layers sequentially. Application dependencies (defined in pyproject.toml) change much less frequently than the application code itself (main.py). By copying the dependency file and installing packages first, Docker can reuse this time-consuming cached layer on subsequent builds. When main.py is updated, Docker only rebuilds the final COPY . . layer, making the build process drastically faster.
 
 ---
 
@@ -890,7 +892,8 @@ docker compose exec api whoami
 > **Screenshot 11:** Take a screenshot showing `docker compose exec api whoami`
 > returning `appuser`.
 >
-> `[insert screenshot]`
+> `[insert screenshot]`<img width="506" height="43" alt="Screenshot_11" src="https://github.com/user-attachments/assets/4f1471c4-4899-4388-ba54-a68f6a1329f7" />
+
 
 ### Step 3 – Commit
 
@@ -905,13 +908,13 @@ git push
 **Question 10.1:** The `USER appuser` instruction is placed after
 `COPY . .`. Why would placing it *before* `COPY` cause a permission problem?
 
-> *Your answer:*
+> *Your answer:* By default, the COPY instruction transfers files as the root user. If USER appuser is declared before the COPY command, the container switches to the restricted appuser, but the copied application files would still be owned by root (unless --chown is explicitly used). This means the application might lack the necessary read or execute permissions for its own files, causing it to crash.
 
 **Question 10.2:** State the **Principle of Least Privilege** in one
 sentence, and name one other place in a typical web application stack
 (outside of containers) where this principle is applied.
 
-> *Your answer:*
+> *Your answer:* The Principle of Least Privilege states that any user, program, or process should be granted only the bare minimum permissions necessary to perform its intended function, and nothing more. Outside of containers, this is heavily applied in Database Access Control; for example, a web application is given a specific database user account with only SELECT, INSERT, and UPDATE rights on specific tables, rather than being granted full Database Administrator (DBA) privileges.
 
 ---
 
@@ -922,19 +925,21 @@ Section 6 of the lecture shows a Dockerfile that runs both PostgreSQL and
 FastAPI in a single container. Describe two concrete operational problems
 this causes in a production environment.
 
-> *Your answer:*
+> *Your answer:* 1) Inability to scale independently: You cannot scale up the FastAPI web workers to handle high web traffic without unnecessarily spinning up duplicate, conflicting database instances.
+2) Maintenance and downtime risks: Updating or patching the FastAPI code requires restarting the entire monolithic container, which forces the database to go offline, causing completely avoidable system downtime.
 
 **Question B – Volume vs. Bind Mount:**  
 Compare named volumes and bind mounts. When is each type appropriate?
 
-> *Your answer:*
+> *Your answer:* Named volumes are managed entirely by Docker within the host's Docker directory, making them highly stable and isolated from the host OS; they are ideal for persistent application data, like a production database. Bind mounts map a specific, user-defined path on the host machine directly into the container; they are appropriate for development environments where a developer wants their local code changes to immediately reflect inside the running container without needing a rebuild.
 
 **Question C – Compose and Reproducibility:**  
 A colleague says: "I can just write the `docker run` commands in a shell
 script — why do I need `docker-compose.yml`?" Give two specific advantages
 of Compose over a shell script of `docker run` commands.
 
-> *Your answer:*
+> *Your answer:* 1) Declarative Infrastructure: Compose uses a single, readable YAML file that defines the desired end-state (networks, volumes, dependencies) as code, which is much easier to version-control and understand than a procedural script of imperative commands.
+2) Automated Lifecycle & Dependency Management: Compose handles the complex startup order (using depends_on), creates shared networks automatically, and provides unified commands (docker compose up / down) to manage the entire multi-container stack simultaneously, whereas a shell script requires manual error handling and cleanup for each container.
 
 **Question D – The Complete Chain:**  
 You have now built and containerised the full stack: PostgreSQL in a
@@ -943,7 +948,7 @@ non-root image → both orchestrated by Docker Compose with credentials
 in `.env`. Describe in two sentences what each layer contributes to
 **portability** and **security**.
 
-> *Your answer:*
+> *Your answer:* Portability is achieved through containers packaging the exact environment and Compose defining the infrastructure as declarative code, ensuring the application runs identically on any developer's machine or cloud server. Security is established by isolating the application and database in discrete containers, running the API as a restricted non-root user, and keeping sensitive database credentials out of the source code using isolated .env files.
 
 ---
 
